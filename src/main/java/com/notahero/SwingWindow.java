@@ -82,6 +82,8 @@ public class SwingWindow {
         if (list.isEmpty()) {
             statusLabel.setText("Patching Forge failed, reason: no versions to patch");
         } else {
+            parentBox.setVisible(false);
+            parentButton.setVisible(false);
             headerLabel.setText("Choose version to patch.");
             JComboBox<Object> box = new JComboBox<>(list.toArray(new String[0]));
             JButton okButton = new JButton("OK");
@@ -128,11 +130,7 @@ public class SwingWindow {
                         "Patching Sodium Extra successful",
                         "Patching Sodium Extra failed, reason: not installed",
                         "Patching Sodium Extra failed, reason: caught exception");
-                case "Patch Forge (1.3.2-1.7.2)" -> {
-                    box.setVisible(false);
-                    okButton.setVisible(false);
-                    patchForgeEvent(box, okButton);
-                }
+                case "Patch Forge (1.3.2-1.7.2)" -> patchForgeEvent(box, okButton);
                 default -> throw new IllegalArgumentException("Unexpected choice: " + choice);
             }
         });
