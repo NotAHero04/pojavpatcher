@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
@@ -45,6 +46,7 @@ public class SwingWindow {
             mainFrame.add(component);
         }
         mainFrame.setVisible(true);
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
     public SwingWindow() {
         this(480, 270);
