@@ -48,6 +48,24 @@ public class SwingWindow {
         this(480, 270);
     }
 
+    public void patch(String patchPath, String destPath, String successString, String notInstalledString, String exceptionString) {
+        File file = new File(System.getProperty("user.dir"), destPath);
+        if (!file.exists()) {
+            statusLabel.setText(notInstalledString);
+        } else {
+            try {
+                InputStream inputStream = SwingWindow.this.getClass().getClassLoader().getResourceAsStream(patchPath);
+                if (inputStream != null) {
+                    Files.copy(inputStream, Path.of(file.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+                }
+                statusLabel.setText(successString);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+                statusLabel.setText(exceptionString);
+            }
+        }
+    }
+
     public void mainEvent() {
         headerLabel.setText("Choose an action.");
         Object[] choices = {"Patch Sodium", "Patch Sodium Extra"};
@@ -56,40 +74,16 @@ public class SwingWindow {
         okButton.addActionListener(e -> {
             String choice = Objects.requireNonNull(box.getSelectedItem()).toString();
             switch(choice) {
-                case "Patch Sodium" -> {
-                    File file = new File(System.getProperty("user.dir"), "config/sodium-mixin.properties");
-                    if (!file.exists()) {
-                        statusLabel.setText("Patching Sodium failed, reason: not installed");
-                    } else {
-                        try {
-                            InputStream inputStream = SwingWindow.this.getClass().getClassLoader().getResourceAsStream("patches/sodium-mixins.properties");
-                            if (inputStream != null) {
-                                Files.copy(inputStream, Path.of(file.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
-                            }
-                            statusLabel.setText("Patching Sodium successful");
-                        } catch (IOException exception) {
-                            exception.printStackTrace();
-                            statusLabel.setText("Patching Sodium failed, reason: caught exception");
-                        }
-                    }
-                }
-                case "Patch Sodium Extra" -> {
-                    File file = new File(System.getProperty("user.dir"), "config/sodium-extra.properties");
-                    if (!file.exists()) {
-                        statusLabel.setText("Patching Sodium Extra failed, reason: not installed");
-                    } else {
-                        try {
-                            InputStream inputStream = SwingWindow.this.getClass().getClassLoader().getResourceAsStream("patches/sodium-extra.properties");
-                            if (inputStream != null) {
-                                Files.copy(inputStream, Path.of(file.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
-                            }
-                            statusLabel.setText("Patching Sodium Extra successful");
-                        } catch (IOException exception) {
-                            exception.printStackTrace();
-                            statusLabel.setText("Patching Sodium Extra failed, reason: caught exception");
-                        }
-                    }
-                }
+                case "Patch Sodium" -> patch("patches/sodium-mixins.properties",
+                        "config/sodium-mixins.properties",
+                        "Patching Sodium successful",
+                        "Patching Sodium failed, reason: not installed",
+                        "Patching Sodium failed, reason: caught exception");
+                case "Patch Sodium Extra" -> patch("patches/sodium-extra.properties",
+                        "config/sodium-extra.properties",
+                        "Patching Sodium Extra successful",
+                        "Patching Sodium Extra failed, reason: not installed",
+                        "Patching Sodium Extra failed, reason: caught exception");
                 default -> throw new IllegalArgumentException("Unexpected choice: " + choice);
             }
         });
